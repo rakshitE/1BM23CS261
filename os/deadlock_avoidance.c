@@ -10,7 +10,6 @@ int allocation[MAX_PROCESSES][MAX_RESOURCES];
 int need[MAX_PROCESSES][MAX_RESOURCES];
 int num_processes, num_resources;
 
-// Function to initialize the data structures
 void initialize() {
     printf("Enter number of processes: ");
     scanf("%d", &num_processes);
@@ -43,7 +42,6 @@ void initialize() {
     }
 }
 
-// Function to check if the system is in a safe state
 bool is_safe() {
     int work[MAX_RESOURCES];
     bool finish[MAX_PROCESSES] = {false};
@@ -95,7 +93,6 @@ bool is_safe() {
     return true;
 }
 
-// Main function
 int main() {
     initialize();
     printf("\nAllocation matrix:\n");
