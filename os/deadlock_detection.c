@@ -38,7 +38,6 @@ void initialize() {
         scanf("%d", &available[i]);
     }
 
-    // Initialize finished array
     for(int i = 0; i < num_processes; i++) {
         finished[i] = false;
     }
@@ -50,12 +49,10 @@ void detect_deadlock() {
     int count = 0;
     bool deadlock = false;
 
-    // Initialize work array
     for(int i = 0; i < num_resources; i++) {
         work[i] = available[i];
     }
 
-    // Find processes that can finish
     bool progress = true;
     while(progress) {
         progress = false;
@@ -72,7 +69,6 @@ void detect_deadlock() {
                 }
 
                 if(can_finish) {
-                    // Process can finish - release its resources
                     for(int j = 0; j < num_resources; j++) {
                         work[j] += allocation[i][j];
                     }
@@ -85,7 +81,6 @@ void detect_deadlock() {
         }
     }
 
-    // Check for deadlock
     deadlock = false;
     for(int i = 0; i < num_processes; i++) {
         if(!finished[i]) {
