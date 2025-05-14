@@ -23,7 +23,6 @@ int main() {
     int n, choice;
     Process p[MAX];
 
-    // User input
     printf("Enter number of processes: ");
     scanf("%d", &n);
 
