@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// Function prototypes
 void fifo(int frames, int ref_len, int ref_string[]);
 void lru(int frames, int ref_len, int ref_string[]);
 void optimal(int frames, int ref_len, int ref_string[]);
@@ -47,7 +46,6 @@ void fifo(int frames, int ref_len, int ref_string[]) {
     for(int i = 0; i < ref_len; i++) {
         bool found = false;
 
-        // Check if page is already in memory
         for(int j = 0; j < frames; j++) {
             if(memory[j] == ref_string[i]) {
                 found = true;
@@ -57,7 +55,7 @@ void fifo(int frames, int ref_len, int ref_string[]) {
 
         if(!found) {
             memory[pointer] = ref_string[i];
-            pointer = (pointer + 1) % frames; // Move pointer circularly
+            pointer = (pointer + 1) % frames; 
             faults++;
             print_step(i + 1, frames, memory, true);
         } else {
@@ -70,7 +68,7 @@ void fifo(int frames, int ref_len, int ref_string[]) {
 
 void lru(int frames, int ref_len, int ref_string[]) {
     int memory[frames];
-    int counter[frames]; // To track usage
+    int counter[frames]; 
     int faults = 0;
 
     for(int i = 0; i < frames; i++) {
@@ -82,7 +80,6 @@ void lru(int frames, int ref_len, int ref_string[]) {
         bool found = false;
         int pos = -1;
 
-        // Check if page is already in memory
         for(int j = 0; j < frames; j++) {
             if(memory[j] == ref_string[i]) {
                 found = true;
@@ -92,11 +89,10 @@ void lru(int frames, int ref_len, int ref_string[]) {
         }
 
         if(found) {
-            counter[pos] = i + 1; // Update last used time
+            counter[pos] = i + 1; 
             print_step(i + 1, frames, memory, false);
         } else {
             faults++;
-            // Find LRU page
             int lru_pos = 0;
             for(int j = 1; j < frames; j++) {
                 if(counter[j] < counter[lru_pos]) {
@@ -124,7 +120,6 @@ void optimal(int frames, int ref_len, int ref_string[]) {
     for(int i = 0; i < ref_len; i++) {
         bool found = false;
 
-        // Check if page is already in memory
         for(int j = 0; j < frames; j++) {
             if(memory[j] == ref_string[i]) {
                 found = true;
@@ -136,7 +131,6 @@ void optimal(int frames, int ref_len, int ref_string[]) {
             print_step(i + 1, frames, memory, false);
         } else {
             faults++;
-            // Find a free frame first
             int free_pos = -1;
             for(int j = 0; j < frames; j++) {
                 if(memory[j] == -1) {
@@ -149,7 +143,6 @@ void optimal(int frames, int ref_len, int ref_string[]) {
                 memory[free_pos] = ref_string[i];
                 print_step(i + 1, frames, memory, true);
             } else {
-                // Find page to replace (optimal)
                 int replace_pos = -1;
                 int farthest = i;
 
