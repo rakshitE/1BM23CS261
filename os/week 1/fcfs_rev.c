@@ -5,6 +5,7 @@ typedef struct {
     int no;
     int at;
     int bt;
+    int original_bt;
     int ct;
     int tat;
     int wt;
@@ -12,6 +13,7 @@ typedef struct {
 
 void fcfs(Process processes[], int n);
 void sjf(Process processes[], int n);
+void sjf_preemptive(Process processes[], int n);
 
 void sortByArrivalTime(Process processes[], int n) {
     for (int i = 0; i < n-1; i++) {
@@ -25,6 +27,12 @@ void sortByArrivalTime(Process processes[], int n) {
     }
 }
 
+void copyProcesses(Process src[], Process dest[], int n) {
+    for (int i = 0; i < n; i++) {
+        dest[i] = src[i];
+        dest[i].original_bt = src[i].bt;
+    }
+}
 
 int main() {
     int n;
@@ -39,10 +47,17 @@ int main() {
         processes[i].no = i + 1;
         printf("Burst time for P%d: ", i + 1);
         scanf("%d", &processes[i].bt);
+        processes[i].original_bt = processes[i].bt;
     }
 
-    fcfs(processes, n);
-    sjf(processes, n);
+    Process fcfsProcs[n], sjfProcs[n], sjfpProcs[n];
+    copyProcesses(processes, fcfsProcs, n);
+    copyProcesses(processes, sjfProcs, n);
+    copyProcesses(processes, sjfpProcs, n);
+
+    fcfs(fcfsProcs, n);
+    sjf(sjfProcs, n);
+    sjf_preemptive(sjfpProcs, n);
 
     return 0;
 }
@@ -94,9 +109,48 @@ void sjf(Process processes[], int n) {
         completed++;
     }
 
-    printf("\nSJF Scheduling:\n");
+    printf("\nSJF Scheduling (Non-Preemptive):\n");
     printf("Process\tAT\tBT\tCT\tTAT\tWT\n");
     for (int i = 0; i < n; i++) {
-        printf("P%d\t%d\t%d\t%d\t%d\t%d\n", processes[i].no, processes[i].at, processes[i].bt, processes[i].ct, processes[i].tat, processes[i].wt);
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n", processes[i].no, processes[i].at, processes[i].original_bt, processes[i].ct, processes[i].tat, processes[i].wt);
+    }
+}
+
+void sjf_preemptive(Process processes[], int n) {
+    int time = 0, completed = 0, shortest = -1, min_bt = 1e9;
+    int is_done[n];
+    for (int i = 0; i < n; i++) is_done[i] = 0;
+
+    while (completed != n) {
+        shortest = -1;
+        min_bt = 1e9;
+
+        for (int i = 0; i < n; i++) {
+            if (processes[i].at <= time && processes[i].bt > 0 && processes[i].bt < min_bt) {
+                min_bt = processes[i].bt;
+                shortest = i;
+            }
+        }
+
+        if (shortest == -1) {
+            time++;
+            continue;
+        }
+
+        processes[shortest].bt--;
+        time++;
+
+        if (processes[shortest].bt == 0) {
+            completed++;
+            processes[shortest].ct = time;
+            processes[shortest].tat = processes[shortest].ct - processes[shortest].at;
+            processes[shortest].wt = processes[shortest].tat - processes[shortest].original_bt;
+        }
+    }
+
+    printf("\nSJF Scheduling (Preemptive):\n");
+    printf("Process\tAT\tBT\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n", processes[i].no, processes[i].at, processes[i].original_bt, processes[i].ct, processes[i].tat, processes[i].wt);
     }
 }
