@@ -1,158 +1,89 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-void firstFit(int blockSize[], int m, int fileSize[], int n);
-void bestFit(int blockSize[], int m, int fileSize[], int n);
-void worstFit(int blockSize[], int m, int fileSize[], int n);
+#define MAX 10
+
+// Print allocation result
+void print(char *name, int alloc[], int n) {
+    printf("\n%s Allocation:\n", name);
+    for (int i = 0; i < n; i++) {
+        if (alloc[i] == -1)
+            printf("Process %d -> Not Allocated\n", i + 1);
+        else
+            printf("Process %d -> Block %d\n", i + 1, alloc[i] + 1);
+    }
+}
+
+// First Fit
+void firstFit(int blocks[], int m, int procs[], int n) {
+    int alloc[MAX], b[MAX];
+    for (int i = 0; i < m; i++) b[i] = blocks[i];
+    for (int i = 0; i < n; i++) {
+        alloc[i] = -1;
+        for (int j = 0; j < m; j++) {
+            if (b[j] >= procs[i]) {
+                alloc[i] = j;
+                b[j] = -1;
+                break;
+            }
+        }
+    }
+    print("First Fit", alloc, n);
+}
+
+// Best Fit
+void bestFit(int blocks[], int m, int procs[], int n) {
+    int alloc[MAX], b[MAX];
+    for (int i = 0; i < m; i++) b[i] = blocks[i];
+    for (int i = 0; i < n; i++) {
+        alloc[i] = -1;
+        int best = -1;
+        for (int j = 0; j < m; j++) {
+            if (b[j] >= procs[i] && (best == -1 || b[j] < b[best]))
+                best = j;
+        }
+        if (best != -1) {
+            alloc[i] = best;
+            b[best] = -1;
+        }
+    }
+    print("Best Fit", alloc, n);
+}
+
+// Worst Fit
+void worstFit(int blocks[], int m, int procs[], int n) {
+    int alloc[MAX], b[MAX];
+    for (int i = 0; i < m; i++) b[i] = blocks[i];
+    for (int i = 0; i < n; i++) {
+        alloc[i] = -1;
+        int worst = -1;
+        for (int j = 0; j < m; j++) {
+            if (b[j] >= procs[i] && (worst == -1 || b[j] > b[worst]))
+                worst = j;
+        }
+        if (worst != -1) {
+            alloc[i] = worst;
+            b[worst] = -1;
+        }
+    }
+    print("Worst Fit", alloc, n);
+}
 
 int main() {
-    int m, n, choice;
+    int blocks[MAX], procs[MAX], m, n;
 
-    printf("Memory Management Scheme\n");
-
-    printf("Enter the number of blocks: ");
+    printf("Enter number of memory blocks: ");
     scanf("%d", &m);
-    int blockSize[m];
+    printf("Enter block sizes:\n");
+    for (int i = 0; i < m; i++) scanf("%d", &blocks[i]);
 
-    printf("Enter the number of files: ");
+    printf("Enter number of processes: ");
     scanf("%d", &n);
-    int fileSize[n];
+    printf("Enter process sizes:\n");
+    for (int i = 0; i < n; i++) scanf("%d", &procs[i]);
 
-    printf("\nEnter the size of the blocks:\n");
-    for (int i = 0; i < m; i++) {
-        printf("Block %d: ", i + 1);
-        scanf("%d", &blockSize[i]);
-    }
-
-    printf("Enter the size of the files:\n");
-    for (int i = 0; i < n; i++) {
-        printf("File %d: ", i + 1);
-        scanf("%d", &fileSize[i]);
-    }
-
-    while (1) {
-        printf("\n1. First Fit\n");
-        printf("2. Best Fit\n");
-        printf("3. Worst Fit\n");
-        printf("4. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 1:
-                printf("\nMemory Management Scheme - First Fit\n");
-                printf("File_No:\tFile_size:\tBlock_no:\tBlock_size:\n");
-                firstFit(blockSize, m, fileSize, n);
-                break;
-            case 2:
-                printf("\nMemory Management Scheme - Best Fit\n");
-                printf("File_No:\tFile_size:\tBlock_no:\tBlock_size:\n");
-                bestFit(blockSize, m, fileSize, n);
-                break;
-            case 3:
-                printf("\nMemory Management Scheme - Worst Fit\n");
-                printf("File_No:\tFile_size:\tBlock_no:\tBlock_size:\n");
-                worstFit(blockSize, m, fileSize, n);
-                break;
-            case 4:
-                exit(0);
-            default:
-                printf("Invalid choice. Please try again.\n");
-        }
-    }
+    firstFit(blocks, m, procs, n);
+    bestFit(blocks, m, procs, n);
+    worstFit(blocks, m, procs, n);
 
     return 0;
-}
-
-void firstFit(int blockSize[], int m, int fileSize[], int n) {
-    int allocation[n];
-
-    for (int i = 0; i < n; i++) {
-        allocation[i] = -1;
-    }
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (blockSize[j] >= fileSize[i]) {
-                allocation[i] = j;
-                blockSize[j] -= fileSize[i];
-                break;
-            }
-        }
-    }
-
-    for (int i = 0; i < n; i++) {
-        if (allocation[i] != -1) {
-            printf("%d\t\t%d\t\t%d\t\t%d\n", i + 1, fileSize[i],
-                   allocation[i] + 1, blockSize[allocation[i]] + fileSize[i]);
-        } else {
-            printf("%d\t\t%d\t\tNot Allocated\t-\n", i + 1, fileSize[i]);
-        }
-    }
-}
-
-void bestFit(int blockSize[], int m, int fileSize[], int n) {
-    int allocation[n];
-
-    for (int i = 0; i < n; i++) {
-        allocation[i] = -1;
-    }
-
-    for (int i = 0; i < n; i++) {
-        int bestIdx = -1;
-        for (int j = 0; j < m; j++) {
-            if (blockSize[j] >= fileSize[i]) {
-                if (bestIdx == -1 || blockSize[j] < blockSize[bestIdx]) {
-                    bestIdx = j;
-                }
-            }
-        }
-
-        if (bestIdx != -1) {
-            allocation[i] = bestIdx;
-            blockSize[bestIdx] -= fileSize[i];
-        }
-    }
-
-    for (int i = 0; i < n; i++) {
-        if (allocation[i] != -1) {
-            printf("%d\t\t%d\t\t%d\t\t%d\n", i + 1, fileSize[i],
-                   allocation[i] + 1, blockSize[allocation[i]] + fileSize[i]);
-        } else {
-            printf("%d\t\t%d\t\tNot Allocated\t-\n", i + 1, fileSize[i]);
-        }
-    }
-}
-
-void worstFit(int blockSize[], int m, int fileSize[], int n) {
-    int allocation[n];
-
-    for (int i = 0; i < n; i++) {
-        allocation[i] = -1;
-    }
-
-    for (int i = 0; i < n; i++) {
-        int worstIdx = -1;
-        for (int j = 0; j < m; j++) {
-            if (blockSize[j] >= fileSize[i]) {
-                if (worstIdx == -1 || blockSize[j] > blockSize[worstIdx]) {
-                    worstIdx = j;
-                }
-            }
-        }
-
-        if (worstIdx != -1) {
-            allocation[i] = worstIdx;
-            blockSize[worstIdx] -= fileSize[i];
-        }
-    }
-
-    for (int i = 0; i < n; i++) {
-        if (allocation[i] != -1) {
-            printf("%d\t\t%d\t\t%d\t\t%d\n", i + 1, fileSize[i],
-                   allocation[i] + 1, blockSize[allocation[i]] + fileSize[i]);
-        } else {
-            printf("%d\t\t%d\t\tNot Allocated\t-\n", i + 1, fileSize[i]);
-        }
-    }
 }
