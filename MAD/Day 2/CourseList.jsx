@@ -1,5 +1,5 @@
 //components/Home/CourseList.jsx
-
+// fix colors import
 import { View, Text, FlatList, Image, StyleSheet, Touchable, TouchableOpacity } from 'react-native'
 import { imageAssets } from '../constant/Option'
 import React from 'react'
