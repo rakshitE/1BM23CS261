@@ -1,8 +1,7 @@
 // components/Home/PraceticeSection.jsx
 
-import { View, Text } from 'react-native'
+import { View, Text, FlatList } from 'react-native'
 import React from 'react'
-import { FlatList } from 'react-native-web'
 
 export default function PracticeSection() {
     return (
