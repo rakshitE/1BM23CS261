@@ -5,6 +5,7 @@ import React from 'react'
 import { FlatList } from 'react-native-web'
 
 export default function PracticeSection() {
+    const router=useRouter();
     return {
         <View style= {{
             marginTop: 10
@@ -19,7 +20,7 @@ export default function PracticeSection() {
                     data={PracticeOption}
                     numColumns={3}
                     renderItem={({ item,index }) => (
-                        <View key = {index}
+                        <TouchableOpacity onPress{()=>router.push('/practice/'+item.name)} key = {index}
                             style = {{
                                 flex: 1,
                                 margin: 5,
@@ -40,7 +41,7 @@ export default function PracticeSection() {
                                 fontSize: 15,
                                 color: colors.WHITE
                             }}>{item.name}</Text>
-                        </View>
+                        </TouchableOpcaity>
                     )}
                 />
             </View>
